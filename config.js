@@ -4,7 +4,7 @@
  * (termina en /exec). Ver la GUÍA, paso 5.
  */
 window.GED_CONFIG = {
-  API_URL: 'PEGAR_AQUI_LA_URL_DE_APPS_SCRIPT',
+  API_URL: 'https://script.google.com/macros/s/AKfycbzsfPsx_N4-F5ydfq4ngr9gqROh_ss_1XtTcPJPyq8VC2IeTOG_nTIL4zFAtXu6uOpB7Q/exec',
   VERSION: '1.2.0',
 
   /* Ajustes del aviso de calidad al sacar la foto. Vienen con valores prudentes.
