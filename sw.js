@@ -1,6 +1,6 @@
 /* Service worker: deja la app disponible sin conexión.
    Subí el número de VERSION cada vez que cambies archivos para forzar la actualización. */
-var VERSION = 'ged-fotos-1.2.0';
+var VERSION = 'ged-fotos-1.2.1';
 var FILES = [
   './', './index.html', './styles.css', './app.js', './exif.js', './config.js', './manifest.webmanifest',
   './fonts/roboto-latin-400-normal.woff2', './fonts/roboto-latin-700-normal.woff2',

@@ -119,13 +119,13 @@ body.kpopen .bar { display: none; }
 .cam .view { flex: 1; position: relative; min-height: 0; }
 .cam video, .cam canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
 .cam .grid { position: absolute; pointer-events: none; }
-.cam .tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
+.cam .tools { z-index: 5; position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
 .cam .tool { background: rgba(0,0,0,.55); color: #fff; border: 1px solid #666; border-radius: 999px; padding: 10px 14px; font-size: 14px; font-weight: 700; }
 .cam .tool.on { background: #fff; color: #000; border-color: #fff; }
 .cam .zoom { position: absolute; left: 20px; right: 20px; bottom: 44px; width: auto; accent-color: #fff; }
-.cam .camwarn { position: absolute; left: 10px; right: 10px; top: 10px; background: #fffbeb; color: #78350f; border: 2px solid #f59e0b; border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.4; }
+.cam .camwarn { z-index: 5; position: absolute; left: 10px; right: 10px; top: 10px; background: #fffbeb; color: #78350f; border: 2px solid #f59e0b; border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.4; }
 .cam .camwarn b { display: block; font-size: 15px; margin-bottom: 4px; }
-.cam .gps { position: absolute; left: 10px; bottom: 10px; font-size: 12px; background: rgba(0,0,0,.6); padding: 4px 8px; border-radius: 6px; }
+.cam .gps { z-index: 5; position: absolute; left: 10px; bottom: 10px; font-size: 12px; background: rgba(0,0,0,.6); padding: 4px 8px; border-radius: 6px; }
 .cam .msg { position: absolute; left: 16px; right: 16px; top: 40%; text-align: center; font-size: 16px; }
 .cam .bot { padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 14px; background: rgba(0,0,0,.6); }
 .shutter { width: 76px; height: 76px; border-radius: 50%; border: 5px solid #fff; background: #fff; box-shadow: inset 0 0 0 4px #000; }
@@ -135,3 +135,14 @@ body.kpopen .bar { display: none; }
 
 .toast { position: fixed; left: 14px; right: 14px; bottom: 90px; max-width: 532px; margin: 0 auto; background: #111827; color: #fff; padding: 14px 16px; border-radius: 12px; font-size: 15px; z-index: 40; display: none; }
 .toast.show { display: block; }
+
+.cam .camq { z-index: 5; position: absolute; right: 10px; bottom: 10px; font-size: 12px; background: rgba(0,0,0,.6); padding: 4px 8px; border-radius: 6px; }
+
+/* Cuadro de confirmación */
+.dlg { position: fixed; inset: 0; z-index: 60; background: rgba(15,23,42,.55); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.dlg .box { width: 100%; max-width: 380px; background: #fff; border-radius: 18px; padding: 22px 20px 16px; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+.dlg h2 { margin: 0 0 8px; font-size: 19px; font-weight: 700; color: #0f172a; }
+.dlg p { margin: 0 0 18px; font-size: 15px; line-height: 1.45; color: #475569; }
+.dlg .acts { display: flex; gap: 10px; }
+.dlg .acts button { flex: 1; width: auto; }
+.dlg .acts .danger { background: #b91c1c; border-color: #b91c1c; color: #fff; }

@@ -136,12 +136,25 @@
     </div>
     <input type="range" id="zoom" class="zoom hidden" aria-label="Zoom">
     <div class="camwarn hidden" id="camWarn" role="alert"><b id="camWarnT"></b><span id="camWarnS"></span></div>
+    <div class="camq hidden" id="camQ"></div>
     <div class="gps" id="camGps">Ubicación: buscando…</div>
   </div>
   <div class="bot" id="camBot1"><button type="button" class="shutter" id="btnShutter" aria-label="Sacar foto" disabled></button></div>
   <div class="bot hidden" id="camBot2">
     <button type="button" class="secondary" id="btnRepetir">Repetir</button>
     <button type="button" class="primary" id="btnUsar">Usar foto</button>
+  </div>
+</div>
+
+<!-- Cuadro de confirmación propio -->
+<div id="dlg" class="dlg hidden" role="dialog" aria-modal="true" aria-labelledby="dlgT">
+  <div class="box">
+    <h2 id="dlgT"></h2>
+    <p id="dlgM"></p>
+    <div class="acts">
+      <button type="button" class="secondary" id="dlgNo">Cancelar</button>
+      <button type="button" class="primary" id="dlgYes">Aceptar</button>
+    </div>
   </div>
 </div>
 

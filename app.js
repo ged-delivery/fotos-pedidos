@@ -183,12 +183,14 @@
   $('btnSalir').addEventListener('click', function () {
     qMine().then(function (items) {
       var msg = items.length
-        ? 'Hay ' + items.length + ' foto(s) sin enviar. Quedan guardadas en este celular y se envían cuando vuelvas a entrar. ¿Salir?'
-        : '¿Salir de la sesión?';
-      if (!window.confirm(msg)) return;
-      clearPhotos(); resetForm();
-      S.token = ''; S.user = null; lsDel('ged.token'); lsDel('ged.user');
-      showLogin();
+        ? 'Hay ' + items.length + ' foto(s) sin enviar. Quedan guardadas en este celular y se envían cuando vuelvas a entrar.'
+        : 'Vas a cerrar tu sesión en este celular.';
+      ask('¿Salir de la sesión?', msg, 'Salir', 'Cancelar').then(function (yes) {
+        if (!yes) return;
+        clearPhotos(); resetForm();
+        S.token = ''; S.user = null; lsDel('ged.token'); lsDel('ged.user');
+        showLogin();
+      });
     });
   });
 
@@ -331,8 +333,10 @@
   }
 
   $('btnCorregir').addEventListener('click', function () {
-    if (!window.confirm('Si corregís los datos hay que volver a sacar las fotos. ¿Seguir?')) return;
-    clearPhotos(); refreshForm();
+    ask('¿Corregir los datos?', 'Si corregís los datos hay que volver a sacar las fotos de este pedido.', 'Corregir', 'Cancelar').then(function (yes) {
+      if (!yes) return;
+      clearPhotos(); refreshForm();
+    });
   });
 
   function clearPhotos() {
@@ -454,6 +458,26 @@
   }
   function freshGps() { return S.gps && Date.now() - S.gps.ts < GPS_FRESH_MS ? S.gps : null; }
 
+  /* Cuadro de confirmación propio (reemplaza el de Chrome). Devuelve una promesa con true/false. */
+  function ask(title, msg, yes, no, danger) {
+    return new Promise(function (resolve) {
+      var box = $('dlg'), y = $('dlgYes'), n = $('dlgNo');
+      $('dlgT').textContent = title; $('dlgM').textContent = msg;
+      y.textContent = yes || 'Aceptar'; n.textContent = no || 'Cancelar';
+      y.className = danger ? 'danger' : 'primary';
+      function done(v) {
+        box.classList.add('hidden'); y.removeEventListener('click', ok); n.removeEventListener('click', cancel);
+        box.removeEventListener('click', bg); document.removeEventListener('keydown', key); resolve(v);
+      }
+      function ok() { done(true); } function cancel() { done(false); }
+      function bg(e) { if (e.target === box) done(false); }
+      function key(e) { if (e.key === 'Escape') done(false); }
+      y.addEventListener('click', ok); n.addEventListener('click', cancel);
+      box.addEventListener('click', bg); document.addEventListener('keydown', key);
+      box.classList.remove('hidden'); n.focus();
+    });
+  }
+
   /* ───────── Calidad de la foto (mide nitidez y luz en el celular) ───────── */
   /* Devuelve { s: puntaje 0-100, sh: índice de nitidez, lu: brillo promedio, o: [códigos], warn: bool } o null si no pudo medir. */
   function analyze(src) {
@@ -544,6 +568,8 @@
   /* Aviso de calidad en la pantalla de revisión de la foto */
   function paintReview() {
     var q = cam.q, bad = !!(q && q.warn);
+    var qb = $('camQ'); qb.classList.toggle('hidden', !q);
+    if (q) qb.textContent = 'Nitidez ' + q.sh + ' · Luz ' + q.lu + ' · Puntaje ' + q.s;
     var w = $('camWarn'); w.classList.toggle('hidden', !bad);
     if (bad) {
       var titles = [], tips = [];
@@ -785,7 +811,9 @@
       });
       Array.prototype.forEach.call(box.querySelectorAll('[data-rm]'), function (btn) {
         btn.addEventListener('click', function () {
-          if (window.confirm('Se borra la foto de este celular y no se enviará. ¿Descartar?')) qDel(btn.getAttribute('data-rm')).then(renderCola);
+          ask('¿Descartar la foto?', 'Se borra de este celular y no se enviará.', 'Descartar', 'Cancelar', true).then(function (yes) {
+            if (yes) qDel(btn.getAttribute('data-rm')).then(renderCola);
+          });
         });
       });
     });
