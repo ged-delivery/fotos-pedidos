@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>Fotos de pedidos</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fotos pedidos">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/roboto-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Inicio de sesión -->
+<section id="vLogin" class="login hidden">
+  <h1>Fotos de pedidos</h1>
+  <p>Grupo El Desembarco</p>
+  <form id="fLogin" autocomplete="on">
+    <label class="l" for="usuario">Usuario</label>
+    <input type="text" id="usuario" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <label class="l" for="clave" style="margin-top:14px">Contraseña</label>
+    <div class="pw">
+      <input type="password" id="clave" name="password" autocomplete="current-password">
+      <button type="button" class="secondary" id="btnVer">Ver</button>
+    </div>
+    <p class="err" id="loginErr" role="alert"></p>
+    <button type="submit" class="primary" id="btnLogin" style="margin-top:8px">Entrar</button>
+  </form>
+</section>
+
+<!-- Elegir local (usuarios con más de un local) -->
+<section id="vLocal" class="login hidden">
+  <h1 id="pickTitle">Elegí tu local de hoy</h1>
+  <p id="pickSub">Solo ves los locales asignados a tu usuario.</p>
+  <div class="gpsbox hidden" id="gpsBox">
+    <div class="l" style="color:var(--accent)">Sugerido por ubicación</div>
+    <div id="gpsTxt"></div>
+    <button type="button" class="primary" id="btnGpsUse" style="margin-top:10px"></button>
+  </div>
+  <label class="l" for="selPick" style="margin-top:6px">Local</label>
+  <select id="selPick"></select>
+  <p class="warnbox hidden" id="pickWarn">Si cambiás de local se borra el pedido que estás cargando. Los pedidos ya guardados no se tocan.</p>
+  <button type="button" class="primary" id="btnPickOk" style="margin-top:16px">Confirmar local</button>
+  <button type="button" class="secondary wide hidden" id="btnPickCancel" style="margin-top:10px">Cancelar</button>
+</section>
+
+<!-- App -->
+<div id="vApp" class="hidden">
+  <header>
+    <div class="t"><b id="hLocal">—</b><small id="hUser"></small></div>
+    <span class="net" id="net" title="Conexión"></span>
+    <button type="button" id="btnLocal" class="hidden">Cambiar local</button>
+    <button type="button" id="btnSalir">Salir</button>
+  </header>
+  <nav>
+    <button type="button" data-tab="cargar" class="on">Cargar</button>
+    <button type="button" data-tab="hoy">Hoy</button>
+    <button type="button" data-tab="envios">Envíos<span class="badge hidden" id="badge">0</span></button>
+  </nav>
+
+  <main id="tCargar">
+    <div class="card" id="cDatos">
+      <label class="l">Marca</label>
+      <div class="chips g3" id="chMarca"></div>
+      <label class="l" style="margin-top:16px">Canal</label>
+      <div class="chips g3" id="chApp"></div>
+      <label class="l" for="pedidoBtn" style="margin-top:16px">Número de pedido</label>
+      <button type="button" class="pedidoField" id="pedidoBtn" aria-label="Número de pedido. Tocá para escribir">
+        <span id="pedidoTxt" class="ph">Como figura en la comanda</span><span class="caret hidden" id="pedidoCaret"></span>
+      </button>
+      <button type="button" class="link hidden" id="btnCorregir">Corregir datos (hay que repetir las fotos)</button>
+    </div>
+    <div class="card">
+      <label class="l">Fotos (con la comanda a la vista)</label>
+      <div class="photos">
+        <div class="shotbox">
+          <button type="button" class="shot" id="shotAbierta" data-tipo="abierta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <b>Bolsa abierta</b><small>Tocá para sacar</small>
+          </button>
+          <div class="dots" id="dotsAbierta" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <button type="button" class="secondary rm hidden" id="rmAbierta" data-rm="abierta">Quitar última</button>
+        </div>
+        <div class="shotbox">
+          <button type="button" class="shot" id="shotCerrada" data-tipo="cerrada">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <b>Bolsa cerrada</b><small>Tocá para sacar</small>
+          </button>
+          <div class="dots" id="dotsCerrada" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <button type="button" class="secondary rm hidden" id="rmCerrada" data-rm="cerrada">Quitar última</button>
+        </div>
+      </div>
+      <div class="hint">Hasta 4 fotos por situación (en pedidos grandes). Se sacan únicamente con la cámara de esta app.</div>
+    </div>
+    <div class="bar"><div class="in"><button type="button" class="primary" id="btnGuardar" disabled>Guardar pedido</button></div></div>
+  </main>
+
+  <main id="tHoy" class="hidden">
+    <div class="card" id="hoyBox"><div class="empty">Cargando…</div></div>
+    <button type="button" class="secondary" id="btnHoy">Actualizar</button>
+  </main>
+
+  <main id="tEnvios" class="hidden">
+    <div class="card" id="colaBox"></div>
+    <button type="button" class="secondary" id="btnReintentar">Reintentar envío ahora</button>
+  </main>
+</div>
+
+<!-- Teclado propio para el número de pedido -->
+<div id="kp" class="kp hidden" role="group" aria-label="Teclado del número de pedido">
+  <div id="kpNum" class="keys kn"></div>
+  <div id="kpAbc" class="ka hidden"></div>
+  <button type="button" class="primary" id="btnKpOk" style="margin-top:8px">Listo</button>
+</div>
+
+<!-- Cámara -->
+<div id="cam" class="cam hidden">
+  <div class="top">
+    <div class="tt" id="camTitle">Foto</div>
+    <button type="button" id="btnCamCerrar">Cancelar</button>
+  </div>
+  <div class="view" id="camView">
+    <video id="video" playsinline muted autoplay></video>
+    <div class="msg hidden" id="camMsg"></div>
+    <svg class="grid hidden" id="camGrid" viewBox="0 0 3 3" preserveAspectRatio="none" aria-hidden="true"><path d="M1 0V3M2 0V3M0 1H3M0 2H3" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+    <div class="tools" id="camTools">
+      <button type="button" class="tool on" id="btnGrid">Cuadrícula</button>
+      <button type="button" class="tool hidden" id="btnTorch">Linterna</button>
+    </div>
+    <input type="range" id="zoom" class="zoom hidden" aria-label="Zoom">
+    <div class="camwarn hidden" id="camWarn" role="alert"><b id="camWarnT"></b><span id="camWarnS"></span></div>
+    <div class="gps" id="camGps">Ubicación: buscando…</div>
+  </div>
+  <div class="bot" id="camBot1"><button type="button" class="shutter" id="btnShutter" aria-label="Sacar foto" disabled></button></div>
+  <div class="bot hidden" id="camBot2">
+    <button type="button" class="secondary" id="btnRepetir">Repetir</button>
+    <button type="button" class="primary" id="btnUsar">Usar foto</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="exif.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
