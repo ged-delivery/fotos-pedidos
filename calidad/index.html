@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calidad – Fotos de pedidos</title>
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="preload" href="../fonts/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/roboto-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="calidad.css">
+</head>
+<body>
+
+<section id="vLogin" class="login hidden">
+  <div class="lbox">
+    <h1>Control de calidad</h1>
+    <p>Fotos de pedidos · Grupo El Desembarco</p>
+    <form id="fLogin" autocomplete="on">
+      <label class="l" for="usuario">Usuario</label>
+      <input type="text" id="usuario" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <label class="l" for="clave" style="margin-top:14px">Contraseña</label>
+      <input type="password" id="clave" name="password" autocomplete="current-password">
+      <div id="loginErr" class="err hidden" role="alert"></div>
+      <button type="submit" class="btn primary" id="bLogin" style="margin-top:18px;width:100%">Entrar</button>
+    </form>
+    <p class="hint">Esta página es solo para usuarios con rol de Calidad. Los locales cargan las fotos desde la app del celular.</p>
+  </div>
+</section>
+
+<div id="vApp" class="hidden">
+  <header class="top">
+    <div class="brand"><b>Control de calidad</b><small id="who"></small></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tabQ" class="on" data-tab="q">Calidad de fotos</button>
+      <button role="tab" id="tabR" data-tab="r">Reclamos de PEYA <span id="badgeR" class="badge hidden"></span></button>
+    </nav>
+    <button class="btn ghost" id="bOut">Salir</button>
+  </header>
+
+  <!-- ═══ Calidad ═══ -->
+  <main id="pQ" class="cols">
+    <aside class="side">
+      <label class="l" for="qDesde">Desde</label><input type="date" id="qDesde">
+      <label class="l" for="qHasta">Hasta</label><input type="date" id="qHasta">
+      <label class="l" for="qLocal">Local</label><select id="qLocal"></select>
+      <label class="l" for="qBus">Buscar pedido</label><input type="search" id="qBus" placeholder="Número de pedido" autocomplete="off">
+      <label class="l">Mostrar</label>
+      <div id="qFil" class="chips"></div>
+      <button class="btn primary" id="qGo" style="margin-top:14px;width:100%">Actualizar</button>
+    </aside>
+    <section class="mid">
+      <div id="qKpi" class="kpis"></div>
+      <div id="qMsg" class="msg hidden"></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Fecha</th><th>Local</th><th>App</th><th>Pedido</th><th>Fotos</th><th>Puntaje</th><th>Alertas</th><th>Revisión</th></tr></thead>
+        <tbody id="qRows"></tbody>
+      </table></div>
+    </section>
+    <section class="det" id="qDet"><div class="empty">Elegí un pedido de la lista para ver sus fotos.</div></section>
+  </main>
+
+  <!-- ═══ Reclamos ═══ -->
+  <main id="pR" class="cols hidden">
+    <aside class="side">
+      <label class="l">Estado</label>
+      <div id="rEst" class="chips col"></div>
+      <label class="l" for="rLocal" style="margin-top:14px">Local</label><select id="rLocal"></select>
+      <label class="l" for="rTipo" style="margin-top:14px">Tipo de reclamo</label><select id="rTipo"></select>
+      <button class="btn primary" id="rGo" style="margin-top:14px;width:100%">Actualizar</button>
+      <p class="hint">Plazo para disputar: <b>10 días corridos</b> desde el reclamo, sin excepción.</p>
+    </aside>
+    <section class="mid">
+      <div id="rKpi" class="kpis"></div>
+      <div id="rMsg" class="msg hidden"></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Pedido</th><th>Reclamo</th><th>Local</th><th>Tipo</th><th>Monto</th><th>Fotos</th><th>Estado</th><th>Plazo</th></tr></thead>
+        <tbody id="rRows"></tbody>
+      </table></div>
+    </section>
+    <section class="det" id="rDet"><div class="empty">Elegí un reclamo de la lista.</div></section>
+  </main>
+</div>
+
+<div id="lightbox" class="lightbox hidden" role="dialog" aria-label="Foto ampliada"><img id="lbImg" alt=""><button class="btn ghost" id="lbX">Cerrar</button></div>
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="printArea" class="print-only"></div>
+
+<script src="../config.js"></script>
+<script src="calidad.js"></script>
+</body>
+</html>

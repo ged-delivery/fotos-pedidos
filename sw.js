@@ -1,6 +1,6 @@
 /* Service worker: deja la app disponible sin conexión.
    Subí el número de VERSION cada vez que cambies archivos para forzar la actualización. */
-var VERSION = 'ged-fotos-1.2.1';
+var VERSION = 'ged-fotos-1.4.0';
 var FILES = [
   './', './index.html', './styles.css', './app.js', './exif.js', './config.js', './manifest.webmanifest',
   './fonts/roboto-latin-400-normal.woff2', './fonts/roboto-latin-700-normal.woff2',
@@ -22,7 +22,8 @@ self.addEventListener('activate', function (e) {
 /* Solo archivos propios (GET). Las llamadas a Apps Script nunca pasan por la caché. */
 self.addEventListener('fetch', function (e) {
   var req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  var u = new URL(req.url);
+  if (req.method !== 'GET' || u.origin !== self.location.origin || u.pathname.indexOf('/calidad/') >= 0) return;   // la página de Calidad no usa caché
   e.respondWith(
     caches.open(VERSION).then(function (cache) {
       return cache.match(req, { ignoreSearch: true }).then(function (hit) {
