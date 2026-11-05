@@ -81,12 +81,62 @@
         function () { if (box.isConnected) box.textContent = 'No se pudo cargar'; });
     });
   }
+  /* Visor de fotos con zoom: rueda del mouse, botones + / −, doble clic, arrastrar para mover, teclas + − 0 y Esc */
+  var Z = { s: 1, x: 0, y: 0, drag: null };
+  var ZMAX = 8;
+  function zApply() {
+    var img = $('lbImg'), st = $('lbStage');
+    if (Z.s <= 1) { Z.s = 1; Z.x = 0; Z.y = 0; }
+    else {                                                    // no dejar que la foto se escape de la pantalla
+      var mx = Math.max(0, (img.offsetWidth * Z.s - st.clientWidth) / 2), my = Math.max(0, (img.offsetHeight * Z.s - st.clientHeight) / 2);
+      Z.x = Math.max(-mx, Math.min(mx, Z.x)); Z.y = Math.max(-my, Math.min(my, Z.y));
+    }
+    img.style.transform = 'translate(' + Z.x + 'px,' + Z.y + 'px) scale(' + Z.s + ')';
+    st.classList.toggle('zoomed', Z.s > 1);
+    $('lbZ').textContent = Math.round(Z.s * 100) + '%';
+  }
+  function zAt(factor, cx, cy) {                              // zoom centrado en un punto (por defecto, el centro)
+    var st = $('lbStage'), r = st.getBoundingClientRect(), ns = Math.max(1, Math.min(ZMAX, Z.s * factor));
+    var px = (cx == null ? r.left + r.width / 2 : cx) - (r.left + r.width / 2), py = (cy == null ? r.top + r.height / 2 : cy) - (r.top + r.height / 2);
+    var k = ns / Z.s; Z.x = px - (px - Z.x) * k; Z.y = py - (py - Z.y) * k; Z.s = ns; zApply();
+  }
+  function lbOpen(src) { Z.s = 1; Z.x = 0; Z.y = 0; $('lbImg').src = src; $('lightbox').classList.remove('hidden'); zApply(); }
+  function lbClose() { $('lightbox').classList.add('hidden'); $('lbImg').removeAttribute('src'); }
   document.addEventListener('click', function (ev) {
     var im = ev.target.closest('.im img');
-    if (im) { ev.stopPropagation(); ev.preventDefault(); $('lbImg').src = im.src; $('lightbox').classList.remove('hidden'); }
+    if (im) { ev.stopPropagation(); ev.preventDefault(); lbOpen(im.src); }
   }, true);
-  $('lightbox').addEventListener('click', function () { $('lightbox').classList.add('hidden'); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') $('lightbox').classList.add('hidden'); });
+  $('lbX').addEventListener('click', lbClose);
+  $('lbIn').addEventListener('click', function () { zAt(1.5); });
+  $('lbOut').addEventListener('click', function () { zAt(1 / 1.5); });
+  $('lbZ').addEventListener('click', function () { Z.s = 1; zApply(); });
+  $('lbStage').addEventListener('wheel', function (ev) { ev.preventDefault(); zAt(Math.exp(-Math.max(-300, Math.min(300, ev.deltaY)) * 0.0025), ev.clientX, ev.clientY); }, { passive: false });
+  $('lbStage').addEventListener('dblclick', function (ev) { if (Z.s > 1) { Z.s = 1; zApply(); } else zAt(3, ev.clientX, ev.clientY); });
+  $('lbStage').addEventListener('pointerdown', function (ev) {
+    if (ev.target.id !== 'lbImg' && ev.target.id !== 'lbStage') return;
+    Z.drag = { x: ev.clientX, y: ev.clientY, ox: Z.x, oy: Z.y, moved: false, bg: ev.target.id === 'lbStage' };
+    if (Z.s > 1) { try { $('lbStage').setPointerCapture(ev.pointerId); } catch (e) {} }
+  });
+  $('lbStage').addEventListener('pointermove', function (ev) {
+    if (!Z.drag) return;
+    var dx = ev.clientX - Z.drag.x, dy = ev.clientY - Z.drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) { Z.drag.moved = true; $('lbStage').classList.add('drag'); }
+    if (Z.s > 1) { Z.x = Z.drag.ox + dx; Z.y = Z.drag.oy + dy; zApply(); }
+  });
+  function dragEnd(ev) {
+    var d = Z.drag; Z.drag = null; $('lbStage').classList.remove('drag');
+    if (d && !d.moved && d.bg) lbClose();    // clic en el fondo oscuro (sin arrastrar) cierra
+  }
+  $('lbStage').addEventListener('pointerup', dragEnd);
+  $('lbStage').addEventListener('pointercancel', function () { Z.drag = null; $('lbStage').classList.remove('drag'); });
+  window.addEventListener('resize', function () { if (!$('lightbox').classList.contains('hidden')) zApply(); });
+  document.addEventListener('keydown', function (e) {
+    if ($('lightbox').classList.contains('hidden')) return;
+    if (e.key === 'Escape') lbClose();
+    else if (e.key === '+' || e.key === '=') zAt(1.5);
+    else if (e.key === '-' || e.key === '_') zAt(1 / 1.5);
+    else if (e.key === '0') { Z.s = 1; zApply(); }
+  });
 
   function optList(sel, arr, cur, all) {
     sel.innerHTML = '<option value="">' + all + '</option>' + arr.map(function (x) { return '<option' + (x.v === cur ? ' selected' : '') + ' value="' + esc(x.v) + '">' + esc(x.t) + '</option>'; }).join('');

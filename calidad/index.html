@@ -81,7 +81,16 @@
   </main>
 </div>
 
-<div id="lightbox" class="lightbox hidden" role="dialog" aria-label="Foto ampliada"><img id="lbImg" alt=""><button class="btn ghost" id="lbX">Cerrar</button></div>
+<div id="lightbox" class="lightbox hidden" role="dialog" aria-label="Foto ampliada">
+  <div id="lbStage" class="lbstage"><img id="lbImg" alt="" draggable="false"></div>
+  <div class="lbbar">
+    <button class="btn ghost" id="lbOut" aria-label="Alejar">−</button>
+    <button class="btn ghost" id="lbZ" aria-label="Volver al tamaño original">100%</button>
+    <button class="btn ghost" id="lbIn" aria-label="Acercar">+</button>
+    <button class="btn ghost" id="lbX">Cerrar</button>
+  </div>
+  <div class="lbhint">Rueda del mouse o + / − para hacer zoom · arrastrá para mover · doble clic para acercar · Esc para cerrar</div>
+</div>
 <div id="toast" class="toast hidden" role="status"></div>
 <div id="printArea" class="print-only"></div>
 
